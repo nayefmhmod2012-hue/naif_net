@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام إدارة شبكة نائف نت اللاسلكية - النسخ السحابي التلقائي</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-border: #334155;
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --purple: #8b5cf6;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); direction: rtl; }
+  header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+    padding: 18px 24px;
+    border-bottom: 2px solid #3b82f6;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+  }
+  .brand h1 { margin: 0; font-size: 22px; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .brand p { margin: 4px 0 0; font-size: 13px; color: #93c5fd; }
+  .cloud-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid #10b981;
+  }
+  .cloud-status.offline {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border-color: #f59e0b;
+  }
+  .top-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn {
+    padding: 9px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+  }
+  .btn-primary { background: var(--primary); }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-emerald { background: var(--emerald); }
+  .btn-amber { background: var(--amber); color: #000; }
+  .btn-rose { background: var(--rose); }
+  .btn-purple { background: var(--purple); }
+  .btn-dark { background: #334155; }
+  
+  .container { max-width: 1450px; margin: 20px auto; padding: 0 16px; }
+  
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 16px;
+    border-radius: 12px;
+    border-right: 4px solid var(--primary);
+  }
+  .stat-card.green { border-right-color: var(--emerald); }
+  .stat-card.amber { border-right-color: var(--amber); }
+  .stat-card.rose { border-right-color: var(--rose); }
+  .stat-card.purple { border-right-color: var(--purple); }
+  .stat-card h3 { margin: 0; font-size: 13px; color: var(--muted); }
+  .stat-card .val { font-size: 24px; font-weight: bold; margin-top: 6px; }
+  .stat-card .sub { font-size: 11px; color: #cbd5e1; margin-top: 4px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: var(--card);
+    color: var(--muted);
+    border: 1px solid var(--card-border);
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Form & Search Controls */
+  .box {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .box-title { margin: 0 0 14px 0; font-size: 17px; color: #60a5fa; border-bottom: 1px solid #334155; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 12px; color: #cbd5e1; font-weight: bold; }
+  .form-group input, .form-group select {
+    padding: 9px 11px;
+    border-radius: 7px;
+    border: 1px solid #475569;
+    background: #0f172a;
+    color: #fff;
+    font-size: 13px;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: 2px solid var(--primary);
+    border-color: transparent;
+  }
+
+  /* Search & Filter Bar */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 260px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    background: #0f172a;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: right;
+  }
+  th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #334155;
+  }
+  th {
+    background: #0f172a;
+    color: #93c5fd;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+  tr:hover { background: rgba(59, 130, 246, 0.08); }
+  .badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    display: inline-block;
+  }
+  .badge-mine { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+  .badge-client { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #f59e0b; }
+  .badge-vlan17 { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+  .badge-vlan18 { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+
+  /* Broadcast Cards */
+  .bcast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+  }
+  .bcast-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 14px;
+    border-top: 3px solid var(--emerald);
+  }
+  .bcast-card h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 16px; }
+  .bcast-meta { font-size: 12px; color: #cbd5e1; line-height: 1.7; }
+
+  /* Print Header Banner */
+  .print-banner {
+    display: none;
+    padding: 12px;
+    border: 2px solid #1e3a8a;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #000;
+  }
+
+  /* Print / PDF Styles */
+  @media print {
+    body { background: #fff !important; color: #000 !important; }
+    .no-print, .tabs, .top-actions, .filter-bar, #addFormBox { display: none !important; }
+    .print-banner { display: block !important; }
+    .panel { display: block !important; margin-bottom: 30px; }
+    .box, .table-wrap, .stat-card, .bcast-card {
+      background: #fff !important;
+      color: #000 !important;
+      border: 1px solid #ccc !important;
+      box-shadow: none !important;
+    }
+    th { background: #1e3a8a !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    td { color: #000 !important; border-bottom: 1px solid #ddd !important; }
+    header { background: #1e3a8a !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>
+      <span>🌐 نظام إدارة وتوثيق شبكة نائف نت اللاسلكية</span>
+      <span id="cloudBadge" class="cloud-status offline no-print">☁️ الحفظ التلقائي: محلي (جاهز للربط السحابي)</span>
+    </h1>
+    <p>المالك والمدير: نائف محمود الصراري | هاتف: 736661655 | آخر عملية حفظ/تحديث: <strong id="lastSavedTime" style="color:#fbbf24;">الآن</strong></p>
+  </div>
+  <div class="top-actions no-print">
+    <button class="btn btn-purple" onclick="switchTab('tabCloud', document.getElementById('btnTabCloud'))">☁️ إعدادات السحابة والنسخ التلقائي</button>
+    <button class="btn btn-rose" onclick="printWithTimestamp()">📄 حفظ PDF بالتاريخ والوقت</button>
+    <button class="btn btn-emerald" onclick="exportCSV()">📊 تصدير Excel بالتاريخ والوقت</button>
+    <button class="btn btn-primary" onclick="downloadBackup()">💾 حفظ نسخة احتياطية (مع الوقت)</button>
+    <label class="btn btn-amber" style="cursor:pointer;">
+      📂 استيراد نسخة
+      <input type="file" accept=".json" style="display:none;" onchange="importBackupFile(event)">
+    </label>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Print Timestamp Banner (Visible on PDF Export) -->
+  <div class="print-banner" id="printBanner">
+    <strong>وثيقة رسمية صادرة من نظام شبكة نائف نت اللاسلكية</strong> | المالك: نائف محمود الصراري (736661655) | تاريخ ووقت استخراج التقرير: <span id="printTimeText"></span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>إجمالي الأجهزة والفيلانات</h3>
+      <div class="val" id="statTotal">0</div>
+      <div class="sub">موزعة بين 172.17 و 172.18</div>
+    </div>
+    <div class="stat-card green">
+      <h3>أجهزة ملك الشبكة (حقي / عهدة)</h3>
+      <div class="val" id="statMine">0</div>
+      <div class="sub">أصول ثابتة وعهدة مسترجعة</div>
+    </div>
+    <div class="stat-card amber">
+      <h3>نطاق 172.17.1.X (فيلان 2 - 301)</h3>
+      <div class="val" id="statV17">0</div>
+      <div class="sub">الرينج الأساسي الأول</div>
+    </div>
+    <div class="stat-card rose">
+      <h3>نطاق 172.18.1.X (فيلان 302+)</h3>
+      <div class="val" id="statV18">0</div>
+      <div class="sub">الرينج الأساسي الثاني</div>
+    </div>
+    <div class="stat-card purple no-print">
+      <h3>حالة المزامنة السحابية</h3>
+      <div class="val" id="statCloud" style="font-size:16px; margin-top:10px; color:#c4b5fd;">حفظ محلي فوري</div>
+      <div class="sub" id="statCloudSub">كل تعديل يُحفظ بالتاريخ والوقت</div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs no-print">
+    <button class="tab-btn active" onclick="switchTab('tabDevices', this)">📋 سجل الأجهزة والفيلانات ولوحة الإضافة</button>
+    <button class="tab-btn" onclick="switchTab('tabBroadcast', this)">📡 لوحة تحكم محطات البث والأبراج</button>
+    <button class="tab-btn" onclick="switchTab('tabFamily', this)">🛡️ وثيقة حقوق الأهل والتركة</button>
+    <button class="tab-btn" id="btnTabCloud" onclick="switchTab('tabCloud', this)">☁️ المزامنة السحابية والتقويم المؤرخ</button>
+  </div>
+
+  <!-- TAB 1: DEVICES & CONTROL PANEL -->
+  <div id="tabDevices" class="panel active">
+    <!-- Add / Edit Device Form -->
+    <div class="box no-print" id="addFormBox">
+      <h3 class="box-title">
+        <span>➕ لوحة تحكم إضافة / تعديل جهاز (مع التعبئة الذكية للفيلان والآيبي والإكمال التلقائي)</span>
+        <span style="font-size:12px; color:#34d399;">يتم الحفظ محلياً وسحابياً فور الضغط على حفظ</span>
+      </h3>
+      <div class="form-grid">
+        <input type="hidden" id="editId" value="">
+        <div class="form-group">
+          <label>رقم الفيلان (VLAN) * [اكتبه ليتعبأ الآيبي تلقائياً]</label>
+          <input type="number" id="fVlan" placeholder="مثال: 29 أو 302" oninput="autoFillFromVlan()">
+        </div>
+        <div class="form-group">
+          <label>اسم الجهاز / الشبكة *</label>
+          <input type="text" id="fName" placeholder="مثال: AP-29 أو 302">
+        </div>
+        <div class="form-group">
+          <label>عنوان الآيبي (IP Address) *</label>
+          <input type="text" id="fIp" placeholder="172.17.1.X أو 172.18.1.X">
+        </div>
+        <div class="form-group">
+          <label>رينج الفيلان (Subnet)</label>
+          <input type="text" id="fSubnet" placeholder="172.17.X.1/24">
+        </div>
+        <div class="form-group">
+          <label>الماك أدرس (MAC Address)</label>
+          <input type="text" id="fMac" placeholder="3C:84:6A:...">
+        </div>
+        <div class="form-group">
+          <label>موقع الجهاز / المنطقة (إكمال تلقائي)</label>
+          <input type="text" id="fLoc" list="locList" placeholder="اختر أو اكتب موقعاً...">
+          <datalist id="locList"></datalist>
+        </div>
+        <div class="form-group">
+          <label>مشبوك من (مصدر الربط - إكمال تلقائي)</label>
+          <input type="text" id="fUplink" list="uplinkList" placeholder="مثال: من البرج / عند أمين...">
+          <datalist id="uplinkList"></datalist>
+        </div>
+        <div class="form-group">
+          <label>التبعية وحالة الملكية</label>
+          <select id="fOwner">
+            <option value="ملك الشبكة (حقي)">ملك الشبكة (حقي)</option>
+            <option value="عهدة مسترجعة عند مشترك">عهدة مسترجعة عند مشترك</option>
+            <option value="ملك المشترك (حقه)">ملك المشترك (حقه)</option>
+            <option value="مسلم قيمته">مسلم قيمته</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>تاريخ البدء (التقويم)</label>
+          <input type="date" id="fStartDate" onchange="autoSetEndDate()">
+        </div>
+        <div class="form-group">
+          <label>تاريخ الانتهاء (التجديد)</label>
+          <input type="date" id="fEndDate">
+        </div>
+        <div class="form-group">
+          <label>اسم دخول الإعدادات</label>
+          <input type="text" id="fUser" placeholder="admin / ubnt">
+        </div>
+        <div class="form-group">
+          <label>رمز دخول الإعدادات</label>
+          <input type="text" id="fPwd" placeholder="كلمة المرور">
+        </div>
+        <div class="form-group" style="grid-column: span 2;">
+          <label>ملاحظات أو اسم ورقم مالك الجهاز</label>
+          <input type="text" id="fNotes" list="notesList" placeholder="أبو 3 دقلات / نوع الأنتينة / ملاحظات...">
+          <datalist id="notesList"></datalist>
+        </div>
+      </div>
+      <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-emerald" onclick="saveDevice()">💾 حفظ الجهاز ومزامنته الآن</button>
+        <button class="btn btn-dark" onclick="clearForm()">🧹 تفريغ الخانات</button>
+      </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="filter-bar no-print">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث فوراً بالاسم، رقم الفيلان، الآيبي، الماك، الموقع، أو الملاحظات..." oninput="renderTable()">
+      <select id="filterOwner" onchange="renderTable()" style="padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
+        <option value="ALL">جميع الملكيات (الكل)</option>
+        <option value="حقي">ملك الشبكة (حقي) فقط</option>
+        <option value="حقه">ملك المشترك (حقه) فقط</option>
+        <option value="مسلم">مسلم قيمته</option>
+      </select>
+      <select id="filterRange" onchange="renderTable()" style="padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
+        <option value="ALL">جميع النطاقات (172.17 + 172.18)</option>
+        <option value="172.17">نطاق 172.17.1.X (فيلان 2 - 301)</option>
+        <option value="172.18">نطاق 172.18.1.X (فيلان 302+)</option>
+        <option value="ACTIVE_INFO">الأجهزة الموثقة بمواقع أو ماك فقط</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>م</th>
+            <th>اسم الجهاز</th>
+            <th>الفيلان</th>
+            <th>عنوان IP</th>
+            <th>رينج الفيلان</th>
+            <th>الماك أدرس</th>
+            <th>موقع الجهاز</th>
+            <th>مشبوك من</th>
+            <th>الملكية</th>
+            <th>تاريخ البدء</th>
+            <th>تاريخ الانتهاء</th>
+            <th>بيانات الدخول</th>
+            <th>ملاحظات</th>
+            <th>آخر تعديل</th>
+            <th class="no-print">إجراء</th>
+          </tr>
+        </thead>
+        <tbody id="deviceTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 2: BROADCAST HUB -->
+  <div id="tabBroadcast" class="panel">
+    <div class="box">
+      <h3 class="box-title">📡 لوحة محطات البث الرئيسية ونقاط التوزيع اللاسلكية (ملك الشبكة)</h3>
+      <p style="color:#94a3b8; font-size:13px; margin-bottom:15px;">تعرض هذه اللوحة كافة محطات البث والأنتينات والسويتشات الرئيسية المملوكة للشبكة والموزعة في الأبراج والمنازل:</p>
+      <div class="bcast-grid" id="broadcastGrid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: FAMILY & HERITAGE GUIDE -->
+  <div id="tabFamily" class="panel">
+    <div class="box" style="border-right: 5px solid #10b981;">
+      <h3 class="box-title">🛡️ وثيقة حفظ حقوق الأهل والورثة - شبكة نائف نت اللاسلكية</h3>
+      <p style="line-height:1.8; font-size:14px;">
+        <strong>المالك والمسؤول:</strong> نائف محمود الصراري | <strong>رقم الهاتف:</strong> 736661655<br>
+        <strong>1. الأجهزة المكتوب أمامها (ملك الشبكة / حقي):</strong> هي ملك خالص للشبكة (نائف محمود الصراري)، سواء كانت في الأبراج أو موضوعة كعهدة عند المشتركين لتوصيل الخدمة (مثل راوترات أبو 3 دقلات والأنتينات والسويتشات)، ويحق للأهل استردادها أو تقييمها وبيعها.<br>
+        <strong>2. الأجهزة المكتوب أمامها (ملك المشترك / حقه) أو (مسلم قيمته):</strong> هي أجهزة دفع المشتركون قيمتها وهي ملك خاص بهم.<br>
+        <strong>3. المعدات المركزية:</strong> تشمل سيرفر المايكروتك الرئيسي، منظومة الطاقة الشمسية، وبنك بطاريات الليثيوم LiFePO4، بالإضافة إلى خزينة قطع الغيار الاحتياطية (الاسبير).
+      </p>
+    </div>
+    <div class="box">
+      <h3 class="box-title">📋 جدول حصر الأجهزة المملوكة للشبكة (الأصول والعهدة المسترجعة)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الفيلان</th>
+              <th>اسم الجهاز</th>
+              <th>عنوان IP</th>
+              <th>الموقع / عند من</th>
+              <th>مشبوك من</th>
+              <th>الماك أدرس</th>
+              <th>التفاصيل والمعدات الملحقة</th>
+            </tr>
+          </thead>
+          <tbody id="familyTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: CLOUD SYNC & AUTO BACKUP SETTINGS -->
+  <div id="tabCloud" class="panel no-print">
+    <div class="box" style="border-right: 5px solid #8b5cf6;">
+      <h3 class="box-title">☁️ إعدادات الحفظ السحابي التلقائي وإرسال النسخ المؤرخة</h3>
+      <p style="font-size:13px; color:#cbd5e1; line-height:1.8;">
+        يتيح لك هذا القسم ربط النظام بالسحابة أو ببوت تيليجرام خاص بك بحيث يتم رفع نسخة احتياطية كاملة تلقائياً عند كل تعديل، مع تسمية كل ملف باسم يحتوي على <strong>التاريخ والوقت الدقيق للعملية</strong>.
+      </p>
+
+      <div class="form-grid" style="margin-top:15px;">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>🔗 رابط قاعدة البيانات السحابية (Firebase Realtime DB URL أو Webhook URL)</label>
+          <input type="text" id="cloudUrl" placeholder="مثال: https://naif-net-default-rtdb.firebaseio.com/backup.json">
+        </div>
+        <div class="form-group">
+          <label>🤖 توكن بوت تيليجرام (Telegram Bot Token - اختياري لإرسال النسخة لهاتفك فوراً)</label>
+          <input type="text" id="tgBotToken" placeholder="مثال: 123456789:ABCdefGHIjklMNOpqrSTUvwxYZ">
+        </div>
+        <div class="form-group">
+          <label>🆔 معرف المحادثة في تيليجرام (Telegram Chat ID)</label>
+          <input type="text" id="tgChatId" placeholder="مثال: 987654321">
+        </div>
+        <div class="form-group">
+          <label>⚙️ خيارات التنزيل التلقائي عند التعديل</label>
+          <select id="autoDownloadMode">
+            <option value="OFF">عدم تنزيل ملف تلقائياً (الحفظ بالمتصفح والسحابة فقط)</option>
+            <option value="ON_SAVE">تنزيل ملف نسخة احتياطية تلقائياً مع كل حفظ لجهازك (ينحفظ بمجلد Google Drive / OneDrive)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-purple" onclick="saveCloudConfig()">💾 حفظ إعدادات السحابة وتفعيلها</button>
+        <button class="btn btn-primary" onclick="syncToCloudNow(true)">🚀 رفع نسخة للسحابة وتيليجرام الآن</button>
+        <button class="btn btn-emerald" onclick="pullFromCloudNow()">📥 استرجاع آخر نسخة من السحابة</button>
+        <button class="btn btn-dark" onclick="resetToDefault()">🔄 تفريغ الجدول تماماً (جدول جديد)</button>
+      </div>
+      <div id="cloudLog" style="margin-top:14px; font-size:13px; color:#34d399;"></div>
+    </div>
+
+    <div class="box">
+      <h3 class="box-title">📜 سجل عمليات الحفظ والتصدير المؤرخة (Snapshots History)</h3>
+      <div id="historyList" style="font-size:13px; color:#cbd5e1; line-height:1.9;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let devices = [];
+let saveHistory = [];
+
+// Helper to get formatted Date and Time string for filenames and logs
+function getFormattedTimestamp() {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  return {
+    fileStamp: `${yyyy}-${mm}-${dd}_الوقت_${hh}-${min}-${ss}`,
+    readable: `${yyyy}/${mm}/${dd} - الساعة ${hh}:${min}:${ss}`
+  };
+}
+
+function loadData() {
+  const saved = localStorage.getItem('naif_net_v5_devices');
+  if (saved) {
+    try {
+      devices = JSON.parse(saved);
+    } catch(e) {
+      devices = [];
+    }
+  } else {
+    devices = [];
+  }
+
+  const savedHist = localStorage.getItem('naif_net_v5_history');
+  if (savedHist) {
+    try { saveHistory = JSON.parse(savedHist); } catch(e) { saveHistory = []; }
+  }
+
+  const lastTime = localStorage.getItem('naif_net_v5_last_time') || getFormattedTimestamp().readable;
+  document.getElementById('lastSavedTime').innerText = lastTime;
+
+  loadCloudConfig();
+  updateStats();
+  populateAutocomplete();
+  renderTable();
+  renderBroadcast();
+  renderFamily();
+  renderHistory();
+}
+
+function addHistoryEntry(actionTitle) {
+  const ts = getFormattedTimestamp();
+  saveHistory.unshift({ time: ts.readable, action: actionTitle, count: devices.length });
+  if (saveHistory.length > 25) saveHistory.pop();
+  localStorage.setItem('naif_net_v5_history', JSON.stringify(saveHistory));
+  localStorage.setItem('naif_net_v5_last_time', ts.readable);
+  document.getElementById('lastSavedTime').innerText = ts.readable;
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyList');
+  if (!el) return;
+  if (!saveHistory.length) {
+    el.innerHTML = 'لا توجد عمليات مسجلة بعد.';
+    return;
+  }
+  el.innerHTML = saveHistory.map(h => `<div>🕒 <strong>[${h.time}]</strong> — ${h.action} (إجمالي الأجهزة: ${h.count})</div>`).join('');
+}
+
+function saveData(actionTitle = 'تحديث وحفظ البيانات') {
+  localStorage.setItem('naif_net_v5_devices', JSON.stringify(devices));
+  addHistoryEntry(actionTitle);
+  updateStats();
+  populateAutocomplete();
+  renderTable();
+  renderBroadcast();
+  renderFamily();
+
+  // Trigger Cloud Sync Automatically
+  syncToCloudNow(false);
+
+  // Trigger Auto-Download if enabled
+  const autoDl = document.getElementById('autoDownloadMode').value;
+  if (autoDl === 'ON_SAVE') {
+    downloadBackup();
+  }
+}
+
+function loadCloudConfig() {
+  const cfgStr = localStorage.getItem('naif_net_v5_cloud_cfg');
+  if (cfgStr) {
+    try {
+      const cfg = JSON.parse(cfgStr);
+      document.getElementById('cloudUrl').value = cfg.cloudUrl || '';
+      document.getElementById('tgBotToken').value = cfg.tgBotToken || '';
+      document.getElementById('tgChatId').value = cfg.tgChatId || '';
+      document.getElementById('autoDownloadMode').value = cfg.autoDownloadMode || 'OFF';
+      updateCloudBadge(cfg);
+    } catch(e) {}
+  }
+}
+
+function saveCloudConfig() {
+  const cfg = {
+    cloudUrl: document.getElementById('cloudUrl').value.trim(),
+    tgBotToken: document.getElementById('tgBotToken').value.trim(),
+    tgChatId: document.getElementById('tgChatId').value.trim(),
+    autoDownloadMode: document.getElementById('autoDownloadMode').value
+  };
+  localStorage.setItem('naif_net_v5_cloud_cfg', JSON.stringify(cfg));
+  updateCloudBadge(cfg);
+  addHistoryEntry('حفظ وتحديث إعدادات الربط السحابي');
+  alert('تم حفظ إعدادات السحابة والنسخ التلقائي بنجاح!');
+}
+
+function updateCloudBadge(cfg) {
+  const badge = document.getElementById('cloudBadge');
+  const statCloud = document.getElementById('statCloud');
+  if ((cfg.cloudUrl && cfg.cloudUrl.startsWith('http')) || (cfg.tgBotToken && cfg.tgChatId)) {
+    badge.className = 'cloud-status no-print';
+    badge.innerText = '☁️ المزامنة السحابية التلقائية: مفعّلة ونشطة';
+    statCloud.innerText = 'متصل بالسحابة ☁️';
+    statCloud.style.color = '#34d399';
+  } else {
+    badge.className = 'cloud-status offline no-print';
+    badge.innerText = '☁️ الحفظ التلقائي: محلي (جاهز للربط السحابي)';
+    statCloud.innerText = 'حفظ محلي فوري';
+    statCloud.style.color = '#c4b5fd';
+  }
+}
+
+async function syncToCloudNow(isManual = false) {
+  const cfgStr = localStorage.getItem('naif_net_v5_cloud_cfg');
+  if (!cfgStr) {
+    if (isManual) alert('يرجى إدخال رابط السحابة أو بيانات بوت تيليجرام أولاً ثم الضغط على حفظ الإعدادات.');
+    return;
+  }
+  const cfg = JSON.parse(cfgStr);
+  const ts = getFormattedTimestamp();
+  const logEl = document.getElementById('cloudLog');
+  const payload = {
+    network: "شبكة نائف نت اللاسلكية",
+    owner: "نائف محمود الصراري",
+    phone: "736661655",
+    backupTimestamp: ts.readable,
+    fileStamp: ts.fileStamp,
+    totalDevices: devices.length,
+    devices: devices
+  };
+
+  let syncedAny = false;
+
+  if (cfg.cloudUrl && cfg.cloudUrl.startsWith('http')) {
+    try {
+      const method = cfg.cloudUrl.includes('firebaseio.com') ? 'PUT' : 'POST';
+      await fetch(cfg.cloudUrl, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      syncedAny = true;
+      if (logEl) logEl.innerText = `✅ تمت المزامنة السحابية بنجاح بتوقيت: ${ts.readable}`;
+    } catch (err) {
+      if (logEl) logEl.innerText = `⚠️ تعذر الوصول لرابط السحابة حالياً (محفوظ محلياً): ${err.message}`;
+    }
+  }
+
+  if (cfg.tgBotToken && cfg.tgChatId) {
+    try {
+      const fileName = `شبكة_نائف_نت_نسخة_${ts.fileStamp}.json`;
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const formData = new FormData();
+      formData.append('chat_id', cfg.tgChatId);
+      formData.append('caption', `☁️ نسخة احتياطية تلقائية - شبكة نائف نت\n📅 التاريخ والوقت: ${ts.readable}\n📊 عدد الأجهزة: ${devices.length}`);
+      formData.append('document', blob, fileName);
+
+      await fetch(`https://api.telegram.org/bot${cfg.tgBotToken}/sendDocument`, {
+        method: 'POST',
+        body: formData
+      });
+      syncedAny = true;
+      if (logEl) logEl.innerText = `✅ تم إرسال النسخة المؤرخة (${fileName}) إلى سحابة تيليجرام بنجاح!`;
+    } catch (err) {
+      if (logEl) logEl.innerText = `⚠️ تعذر الإرسال لتيليجرام حالياً: ${err.message}`;
+    }
+  }
+
+  if (isManual && !syncedAny) {
+    alert('يرجى التأكد من وضع رابط سحابي صحيح أو توكن ومعرف تيليجرام.');
+  } else if (isManual && syncedAny) {
+    addHistoryEntry('مزامنة سحابية يدوية ناجحة');
+  }
+}
+
+async function pullFromCloudNow() {
+  const cfgStr = localStorage.getItem('naif_net_v5_cloud_cfg');
+  if (!cfgStr) {
+    alert('يرجى إعداد رابط السحابة أولاً.');
+    return;
+  }
+  const cfg = JSON.parse(cfgStr);
+  if (!cfg.cloudUrl || !cfg.cloudUrl.startsWith('http')) {
+    alert('يرجى إدخال رابط قاعدة البيانات السحابية أولاً.');
+    return;
+  }
+  try {
+    const res = await fetch(cfg.cloudUrl);
+    const data = await res.json();
+    if (data && Array.isArray(data.devices)) {
+      devices = data.devices;
+      saveData(`استرجاع نسخة من السحابة مؤرخة بـ (${data.backupTimestamp || 'غير محدد'})`);
+      alert(`تم استرجاع ${devices.length} جهازاً من السحابة بنجاح!`);
+    } else {
+      alert('لم يتم العثور على بيانات أجهزة صالحة في الرابط السحابي.');
+    }
+  } catch (err) {
+    alert('حدث خطأ أثناء الاتصال بالسحابة: ' + err.message);
+  }
+}
+
+function autoFillFromVlan() {
+  const v = parseInt(document.getElementById('fVlan').value);
+  if (!v || isNaN(v)) return;
+  if (v >= 302) {
+    const subOctet = v - 300;
+    document.getElementById('fIp').value = `172.18.1.${subOctet}`;
+    document.getElementById('fSubnet').value = `172.18.${subOctet}.1/24`;
+    if (!document.getElementById('editId').value) {
+      document.getElementById('fName').value = `${v}`;
+    }
+  } else {
+    document.getElementById('fIp').value = `172.17.1.${v}`;
+    document.getElementById('fSubnet').value = `172.17.${v}.1/24`;
+    if (!document.getElementById('editId').value) {
+      document.getElementById('fName').value = `AP-${v}`;
+    }
+  }
+}
+
+function autoSetEndDate() {
+  const s = document.getElementById('fStartDate').value;
+  if (s && !document.getElementById('fEndDate').value) {
+    const d = new Date(s);
+    d.setDate(d.getDate() + 30);
+    document.getElementById('fEndDate').value = d.toISOString().split('T')[0];
+  }
+}
+
+function populateAutocomplete() {
+  const locs = new Set();
+  const uplinks = new Set();
+  const notes = new Set();
+  devices.forEach(d => {
+    if (d.loc) locs.add(d.loc);
+    if (d.uplink) uplinks.add(d.uplink);
+    if (d.notes) notes.add(d.notes);
+  });
+  document.getElementById('locList').innerHTML = Array.from(locs).map(x => `<option value="${x}">`).join('');
+  document.getElementById('uplinkList').innerHTML = Array.from(uplinks).map(x => `<option value="${x}">`).join('');
+  document.getElementById('notesList').innerHTML = Array.from(notes).map(x => `<option value="${x}">`).join('');
+}
+
+function updateStats() {
+  document.getElementById('statTotal').innerText = devices.length;
+  document.getElementById('statMine').innerText = devices.filter(d => d.owner && d.owner.includes('حقي')).length;
+  document.getElementById('statV17').innerText = devices.filter(d => d.ip && d.ip.startsWith('172.17.')).length;
+  document.getElementById('statV18').innerText = devices.filter(d => d.ip && d.ip.startsWith('172.18.')).length;
+}
+
+function renderTable() {
+  const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  const fOwner = document.getElementById('filterOwner').value;
+  const fRange = document.getElementById('filterRange').value;
+
+  const filtered = devices.filter(d => {
+    if (fOwner !== 'ALL' && !(d.owner || '').includes(fOwner)) return false;
+    if (fRange === '172.17' && !(d.ip || '').startsWith('172.17.')) return false;
+    if (fRange === '172.18' && !(d.ip || '').startsWith('172.18.')) return false;
+    if (fRange === 'ACTIVE_INFO' && !d.loc && !d.mac && !d.notes) return false;
+    if (!q) return true;
+    const hay = `${d.name} ${d.vlan} ${d.ip} ${d.subnet} ${d.mac} ${d.loc} ${d.uplink} ${d.owner} ${d.notes}`.toLowerCase();
+    return hay.includes(q);
+  });
+
+  const tbody = document.getElementById('deviceTableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="15" style="text-align:center; color:#94a3b8; padding:30px;">لا توجد أجهزة مضافة حالياً. ابدأ بإضافة الأجهزة من لوحة الإضافة بالأعلى.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((d, i) => {
+    const isV18 = (d.ip || '').startsWith('172.18.');
+    const isMine = (d.owner || '').includes('حقي');
+    const auth = (d.user || d.pwd) ? `${d.user} / ${d.pwd}` : '-';
+    return `<tr>
+      <td>${i + 1}</td>
+      <td style="font-weight:bold; color:#fff;">${d.name}</td>
+      <td><span class="badge ${isV18 ? 'badge-vlan18' : 'badge-vlan17'}">${d.vlan}</span></td>
+      <td style="font-family:monospace; font-weight:bold;">${d.ip}</td>
+      <td style="font-family:monospace; color:#94a3b8;">${d.subnet}</td>
+      <td style="font-family:monospace; color:#38bdf8;">${d.mac || '-'}</td>
+      <td>${d.loc || '-'}</td>
+      <td>${d.uplink || '-'}</td>
+      <td><span class="badge ${isMine ? 'badge-mine' : 'badge-client'}">${d.owner}</span></td>
+      <td>${d.startDate || '-'}</td>
+      <td>${d.endDate || '-'}</td>
+      <td style="font-family:monospace; font-size:11px;">${auth}</td>
+      <td>${d.notes || '-'}</td>
+      <td style="font-size:11px; color:#94a3b8;">${d.updatedAt || '-'}</td>
+      <td class="no-print">
+        <button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="editDevice(${d.id})">تعديل</button>
+        <button class="btn btn-rose" style="padding:4px 8px; font-size:11px;" onclick="deleteDevice(${d.id})">حذف</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderBroadcast() {
+  const bcast = devices.filter(d => (d.owner && d.owner.includes('حقي')) || d.mac);
+  const grid = document.getElementById('broadcastGrid');
+  if (!bcast.length) {
+    grid.innerHTML = `<div style="color:#94a3b8; font-size:13px;">لا توجد محطات بث أو أصول مسجلة بعد.</div>`;
+    return;
+  }
+  grid.innerHTML = bcast.map(d => `<div class="bcast-card">
+    <h4>📡 ${d.name} (VLAN ${d.vlan})</h4>
+    <div class="bcast-meta">
+      <strong>الآيبي:</strong> ${d.ip} | <strong>الرينج:</strong> ${d.subnet}<br>
+      <strong>الموقع:</strong> ${d.loc || 'محطة رئيسية بالبرج'}<br>
+      <strong>مشبوك من:</strong> ${d.uplink || 'البرج الرئيسي'}<br>
+      <strong>الماك:</strong> ${d.mac || 'غير مسجل'}<br>
+      <strong>الملكية:</strong> ${d.owner}<br>
+      <strong>ملاحظات:</strong> ${d.notes || '-'}
+    </div>
+  </div>`).join('');
+}
+
+function renderFamily() {
+  const mine = devices.filter(d => d.owner && d.owner.includes('حقي'));
+  const tbody = document.getElementById('familyTableBody');
+  if (!mine.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:20px;">لا توجد أصول مسجلة لملك الشبكة حالياً.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = mine.map(d => `<tr>
+    <td><strong>${d.vlan}</strong></td>
+    <td><strong>${d.name}</strong></td>
+    <td style="font-family:monospace;">${d.ip}</td>
+    <td>${d.loc || 'محطة بث بالبرج'}</td>
+    <td>${d.uplink || 'البرج الرئيسي'}</td>
+    <td style="font-family:monospace;">${d.mac || '-'}</td>
+    <td>${d.notes || 'جهاز تابع لملكية الشبكة'}</td>
+  </tr>`).join('');
+}
+
+function saveDevice() {
+  const vlan = parseInt(document.getElementById('fVlan').value);
+  const name = document.getElementById('fName').value.trim();
+  const ip = document.getElementById('fIp').value.trim();
+  if (!vlan || !name || !ip) {
+    alert('يرجى إدخال رقم الفيلان واسم الجهاز والآيبي!');
+    return;
+  }
+  const ts = getFormattedTimestamp();
+  const editId = document.getElementById('editId').value;
+  const obj = {
+    id: editId ? parseInt(editId) : (devices.length ? Math.max(...devices.map(x => x.id)) + 1 : 1),
+    vlan,
+    name,
+    ip,
+    subnet: document.getElementById('fSubnet').value.trim(),
+    mac: document.getElementById('fMac').value.trim(),
+    loc: document.getElementById('fLoc').value.trim(),
+    uplink: document.getElementById('fUplink').value.trim(),
+    owner: document.getElementById('fOwner').value,
+    startDate: document.getElementById('fStartDate').value,
+    endDate: document.getElementById('fEndDate').value,
+    user: document.getElementById('fUser').value.trim(),
+    pwd: document.getElementById('fPwd').value.trim(),
+    notes: document.getElementById('fNotes').value.trim(),
+    updatedAt: ts.readable
+  };
+
+  const existingIdx = devices.findIndex(x => x.id === obj.id);
+  if (existingIdx >= 0) {
+    devices[existingIdx] = obj;
+  } else {
+    devices.push(obj);
+    devices.sort((a,b) => a.vlan - b.vlan);
+  }
+  saveData(`حفظ/تعديل جهاز ${obj.name} (فيلان ${obj.vlan})`);
+  clearForm();
+  alert(`تم حفظ الجهاز (${obj.name}) بنجاح بتوقيت: ${ts.readable}`);
+}
+
+function editDevice(id) {
+  const d = devices.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('editId').value = d.id;
+  document.getElementById('fVlan').value = d.vlan;
+  document.getElementById('fName').value = d.name;
+  document.getElementById('fIp').value = d.ip;
+  document.getElementById('fSubnet').value = d.subnet;
+  document.getElementById('fMac').value = d.mac;
+  document.getElementById('fLoc').value = d.loc;
+  document.getElementById('fUplink').value = d.uplink;
+  document.getElementById('fOwner').value = d.owner;
+  document.getElementById('fStartDate').value = d.startDate;
+  document.getElementById('fEndDate').value = d.endDate;
+  document.getElementById('fUser').value = d.user;
+  document.getElementById('fPwd').value = d.pwd;
+  document.getElementById('fNotes').value = d.notes;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteDevice(id) {
+  if (confirm('هل أنت متأكد من حذف هذا الجهاز؟')) {
+    devices = devices.filter(x => x.id !== id);
+    saveData('حذف جهاز من النظام');
+  }
+}
+
+function clearForm() {
+  ['editId','fVlan','fName','fIp','fSubnet','fMac','fLoc','fUplink','fStartDate','fEndDate','fUser','fPwd','fNotes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function exportCSV() {
+  const ts = getFormattedTimestamp();
+  const metaRow = [`"تقرير شبكة نائف نت اللاسلكية - المالك: نائف محمود الصراري (736661655)"`, `"تاريخ ووقت التصدير: ${ts.readable}"`];
+  const headers = ['م','اسم الجهاز','الفيلان','عنوان IP','رينج الفيلان','الماك أدرس','الموقع','مشبوك من','الملكية','تاريخ البدء','تاريخ الانتهاء','اسم الدخول','رمز الدخول','ملاحظات','آخر تعديل'];
+  const rows = devices.map((d, i) => [
+    i+1, d.name, d.vlan, d.ip, d.subnet, d.mac, d.loc, d.uplink, d.owner, d.startDate, d.endDate, d.user, d.pwd, d.notes, d.updatedAt || ts.readable
+  ].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
+  const csv = '\uFEFF' + [metaRow.join(','), headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `شبكة_نائف_نت_تصدير_اكسل_${ts.fileStamp}.csv`;
+  a.click();
+  addHistoryEntry(`تصدير ملف إكسل مؤرخ (${a.download})`);
+}
+
+function downloadBackup() {
+  const ts = getFormattedTimestamp();
+  const backupObj = {
+    network: "شبكة نائف نت اللاسلكية",
+    owner: "نائف محمود الصراري",
+    phone: "736661655",
+    exportedAt: ts.readable,
+    devices: devices
+  };
+  const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `شبكة_نائف_نت_نسخة_احتياطية_${ts.fileStamp}.json`;
+  a.click();
+  addHistoryEntry(`حفظ نسخة احتياطية مؤرخة (${a.download})`);
+}
+
+function importBackupFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const importedDevices = Array.isArray(parsed) ? parsed : (parsed.devices || []);
+      if (importedDevices.length >= 0) {
+        devices = importedDevices;
+        saveData(`استيراد نسخة احتياطية من الملف (${file.name})`);
+        alert(`تم استيراد ${devices.length} جهازاً بنجاح!`);
+      } else {
+        alert('الملف لا يحتوي على بيانات صالحة.');
+      }
+    } catch (err) {
+      alert('خطأ في قراءة ملف النسخة الاحتياطية.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function printWithTimestamp() {
+  const ts = getFormattedTimestamp();
+  document.getElementById('printTimeText').innerText = ts.readable;
+  const oldTitle = document.title;
+  document.title = `شبكة_نائف_نت_تقرير_شامل_${ts.fileStamp}`;
+  window.print();
+  document.title = oldTitle;
+  addHistoryEntry(`طباعة / حفظ تقرير PDF بالتاريخ والوقت (${ts.readable})`);
+}
+
+function resetToDefault() {
+  if (confirm('هل تريد تفريد المسح والبدء بجدول فارغ تماماً؟')) {
+    devices = [];
+    localStorage.removeItem('naif_net_v5_devices');
+    saveData('تفريغ كافة الأجهزة وبدء جدول جديد');
+    alert('تم تفريغ النظام وأصبح فارغاً بنجاح.');
+  }
+}
+
+window.onload = loadData;
+</script>
+</body>
+</html>
