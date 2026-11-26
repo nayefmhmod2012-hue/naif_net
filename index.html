@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1e3a8a">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231e3a8a'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%2338bdf8' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%2310b981'/%3E%3C/svg%3E">
 <title>نظام إدارة شبكة نائف نت اللاسلكية - النسخ السحابي التلقائي</title>
 <style>
   :root {
@@ -30,7 +33,7 @@
     align-items: center;
     gap: 15px;
   }
-  .brand h1 { margin: 0; font-size: 22px; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .brand h1 { margin: 0; font-size: 22px; color: #fff; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
   .brand p { margin: 4px 0 0; font-size: 13px; color: #93c5fd; }
   .cloud-status {
     display: inline-flex;
@@ -69,10 +72,9 @@
   .btn-rose { background: var(--rose); }
   .btn-purple { background: var(--purple); }
   .btn-dark { background: #334155; }
-  
+
   .container { max-width: 1450px; margin: 20px auto; padding: 0 16px; }
-  
-  /* Stats Grid */
+
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -94,7 +96,6 @@
   .stat-card .val { font-size: 24px; font-weight: bold; margin-top: 6px; }
   .stat-card .sub { font-size: 11px; color: #cbd5e1; margin-top: 4px; }
 
-  /* Tabs */
   .tabs {
     display: flex;
     gap: 8px;
@@ -119,11 +120,9 @@
     border-color: var(--primary);
   }
 
-  /* Panels */
   .panel { display: none; }
   .panel.active { display: block; }
 
-  /* Form & Search Controls */
   .box {
     background: var(--card);
     border: 1px solid var(--card-border);
@@ -131,7 +130,18 @@
     padding: 18px;
     margin-bottom: 20px;
   }
-  .box-title { margin: 0 0 14px 0; font-size: 17px; color: #60a5fa; border-bottom: 1px solid #334155; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .box-title {
+    margin: 0 0 14px 0;
+    font-size: 17px;
+    color: #60a5fa;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
   .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -152,7 +162,6 @@
     border-color: transparent;
   }
 
-  /* Search & Filter Bar */
   .filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -171,7 +180,6 @@
     font-size: 14px;
   }
 
-  /* Table */
   .table-wrap {
     overflow-x: auto;
     background: var(--card);
@@ -207,7 +215,6 @@
   .badge-vlan17 { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
   .badge-vlan18 { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
 
-  /* Broadcast Cards */
   .bcast-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -223,7 +230,32 @@
   .bcast-card h4 { margin: 0 0 8px 0; color: #38bdf8; font-size: 16px; }
   .bcast-meta { font-size: 12px; color: #cbd5e1; line-height: 1.7; }
 
-  /* Print Header Banner */
+  .guide-steps { line-height: 1.9; font-size: 14px; color: #e2e8f0; }
+  .guide-steps li { margin-bottom: 8px; }
+  .code-box {
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #93c5fd;
+    white-space: pre-wrap;
+    direction: ltr;
+    text-align: left;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .lock-box {
+    max-width: 460px;
+    margin: 25px auto;
+    background: #0f172a;
+    border: 1px solid #475569;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+
   .print-banner {
     display: none;
     padding: 12px;
@@ -234,7 +266,6 @@
     color: #000;
   }
 
-  /* Print / PDF Styles */
   @media print {
     body { background: #fff !important; color: #000 !important; }
     .no-print, .tabs, .top-actions, .filter-bar, #addFormBox { display: none !important; }
@@ -275,12 +306,10 @@
 </header>
 
 <div class="container">
-  <!-- Print Timestamp Banner (Visible on PDF Export) -->
   <div class="print-banner" id="printBanner">
     <strong>وثيقة رسمية صادرة من نظام شبكة نائف نت اللاسلكية</strong> | المالك: نائف محمود الصراري (736661655) | تاريخ ووقت استخراج التقرير: <span id="printTimeText"></span>
   </div>
 
-  <!-- Stats -->
   <div class="stats-grid">
     <div class="stat-card">
       <h3>إجمالي الأجهزة والفيلانات</h3>
@@ -309,17 +338,16 @@
     </div>
   </div>
 
-  <!-- Navigation Tabs -->
   <div class="tabs no-print">
     <button class="tab-btn active" onclick="switchTab('tabDevices', this)">📋 سجل الأجهزة والفيلانات ولوحة الإضافة</button>
     <button class="tab-btn" onclick="switchTab('tabBroadcast', this)">📡 لوحة تحكم محطات البث والأبراج</button>
     <button class="tab-btn" onclick="switchTab('tabFamily', this)">🛡️ وثيقة حقوق الأهل والتركة</button>
     <button class="tab-btn" id="btnTabCloud" onclick="switchTab('tabCloud', this)">☁️ المزامنة السحابية والتقويم المؤرخ</button>
+    <button class="tab-btn" onclick="switchTab('tabGuide', this)">🔐 تعليمات جوجل والبوت والسكربت (محمي)</button>
   </div>
 
-  <!-- TAB 1: DEVICES & CONTROL PANEL -->
+  <!-- TAB 1: DEVICES -->
   <div id="tabDevices" class="panel active">
-    <!-- Add / Edit Device Form -->
     <div class="box no-print" id="addFormBox">
       <h3 class="box-title">
         <span>➕ لوحة تحكم إضافة / تعديل جهاز (مع التعبئة الذكية للفيلان والآيبي والإكمال التلقائي)</span>
@@ -394,7 +422,6 @@
       </div>
     </div>
 
-    <!-- Search & Filter Bar -->
     <div class="filter-bar no-print">
       <input type="text" id="searchInput" class="search-input" placeholder="🔍 ابحث فوراً بالاسم، رقم الفيلان، الآيبي، الماك، الموقع، أو الملاحظات..." oninput="renderTable()">
       <select id="filterOwner" onchange="renderTable()" style="padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
@@ -446,15 +473,15 @@
     </div>
   </div>
 
-  <!-- TAB 3: FAMILY & HERITAGE GUIDE -->
+  <!-- TAB 3: FAMILY GUIDE -->
   <div id="tabFamily" class="panel">
     <div class="box" style="border-right: 5px solid #10b981;">
       <h3 class="box-title">🛡️ وثيقة حفظ حقوق الأهل والورثة - شبكة نائف نت اللاسلكية</h3>
       <p style="line-height:1.8; font-size:14px;">
         <strong>المالك والمسؤول:</strong> نائف محمود الصراري | <strong>رقم الهاتف:</strong> 736661655<br>
-        <strong>1. الأجهزة المكتوب أمامها (ملك الشبكة / حقي):</strong> هي ملك خالص للشبكة (نائف محمود الصراري)، سواء كانت في الأبراج أو موضوعة كعهدة عند المشتركين لتوصيل الخدمة (مثل راوترات أبو 3 دقلات والأنتينات والسويتشات)، ويحق للأهل استردادها أو تقييمها وبيعها.<br>
+        <strong>1. الأجهزة المكتوب أمامها (ملك الشبكة / حقي):</strong> هي ملك خالص للشبكة (نائف محمود الصراري)، سواء كانت في الأبراج أو موضوعة كعهدة عند المشتركين لتوصيل الخدمة، ويحق للأهل استردادها أو تقييمها وبيعها.<br>
         <strong>2. الأجهزة المكتوب أمامها (ملك المشترك / حقه) أو (مسلم قيمته):</strong> هي أجهزة دفع المشتركون قيمتها وهي ملك خاص بهم.<br>
-        <strong>3. المعدات المركزية:</strong> تشمل سيرفر المايكروتك الرئيسي، منظومة الطاقة الشمسية، وبنك بطاريات الليثيوم LiFePO4، بالإضافة إلى خزينة قطع الغيار الاحتياطية (الاسبير).
+        <strong>3. المعدات المركزية:</strong> تشمل سيرفر المايكروتك الرئيسي، منظومة الطاقة الشمسية، وبنك بطاريات الليثيوم LiFePO4، بالإضافة إلى خزينة قطع الغيار الاحتياطية.
       </p>
     </div>
     <div class="box">
@@ -478,21 +505,21 @@
     </div>
   </div>
 
-  <!-- TAB 4: CLOUD SYNC & AUTO BACKUP SETTINGS -->
+  <!-- TAB 4: CLOUD SYNC -->
   <div id="tabCloud" class="panel no-print">
     <div class="box" style="border-right: 5px solid #8b5cf6;">
       <h3 class="box-title">☁️ إعدادات الحفظ السحابي التلقائي وإرسال النسخ المؤرخة</h3>
       <p style="font-size:13px; color:#cbd5e1; line-height:1.8;">
-        يتيح لك هذا القسم ربط النظام بالسحابة أو ببوت تيليجرام خاص بك بحيث يتم رفع نسخة احتياطية كاملة تلقائياً عند كل تعديل، مع تسمية كل ملف باسم يحتوي على <strong>التاريخ والوقت الدقيق للعملية</strong>.
+        يدعم هذا القسم الربط مع <strong>Google Apps Script (Google Sheets / Drive)</strong> أو <strong>Firebase</strong> بالإضافة إلى <strong>بوت تيليجرام</strong> لإرسال نسخة احتياطية مؤرخة بالتاريخ والوقت.
       </p>
 
       <div class="form-grid" style="margin-top:15px;">
         <div class="form-group" style="grid-column: span 2;">
-          <label>🔗 رابط قاعدة البيانات السحابية (Firebase Realtime DB URL أو Webhook URL)</label>
-          <input type="text" id="cloudUrl" placeholder="مثال: https://naif-net-default-rtdb.firebaseio.com/backup.json">
+          <label>🔗 رابط السحابة (Google Apps Script Web App URL أو Firebase Realtime DB URL)</label>
+          <input type="text" id="cloudUrl" placeholder="https://script.google.com/macros/s/.../exec أو رابط Firebase">
         </div>
         <div class="form-group">
-          <label>🤖 توكن بوت تيليجرام (Telegram Bot Token - اختياري لإرسال النسخة لهاتفك فوراً)</label>
+          <label>🤖 توكن بوت تيليجرام (Telegram Bot Token)</label>
           <input type="text" id="tgBotToken" placeholder="مثال: 123456789:ABCdefGHIjklMNOpqrSTUvwxYZ">
         </div>
         <div class="form-group">
@@ -503,7 +530,7 @@
           <label>⚙️ خيارات التنزيل التلقائي عند التعديل</label>
           <select id="autoDownloadMode">
             <option value="OFF">عدم تنزيل ملف تلقائياً (الحفظ بالمتصفح والسحابة فقط)</option>
-            <option value="ON_SAVE">تنزيل ملف نسخة احتياطية تلقائياً مع كل حفظ لجهازك (ينحفظ بمجلد Google Drive / OneDrive)</option>
+            <option value="ON_SAVE">تنزيل ملف نسخة احتياطية تلقائياً مع كل حفظ</option>
           </select>
         </div>
       </div>
@@ -522,13 +549,203 @@
       <div id="historyList" style="font-size:13px; color:#cbd5e1; line-height:1.9;"></div>
     </div>
   </div>
+
+  <!-- TAB 5: PASSWORD-PROTECTED SETUP GUIDE & COPYABLE SCRIPT -->
+  <div id="tabGuide" class="panel no-print">
+    <div id="guideLockScreen" class="lock-box">
+      <h3 style="margin-top:0; color:#fbbf24;">🔐 قسم التعليمات والسكربتات محمي بكلمة مرور</h3>
+      <p style="font-size:13px; color:#cbd5e1; line-height:1.7;">
+        لا يمكن عرض التعليمات أو نسخ سكربت جوجل وإعدادات البوت إلا بعد إدخال كلمة المرور الخاصة بالمدير.
+      </p>
+      <div class="form-group" style="text-align:right; margin-bottom:12px;">
+        <label>أدخل كلمة المرور:</label>
+        <input type="password" id="guidePassInput" placeholder="اكتب كلمة المرور هنا..." onkeydown="if(event.key==='Enter') unlockGuide()">
+      </div>
+      <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="unlockGuide()">🔓 فتح التعليمات والسكربت</button>
+      <div id="guidePassError" style="color:#fb7185; font-size:12px; margin-top:10px;"></div>
+    </div>
+
+    <div id="guideUnlockedContent" style="display:none;">
+      <div class="box" style="border-right: 5px solid #38bdf8;">
+        <div class="box-title">
+          <span>📖 تعليمات الربط بجوجل (Google Sheets / Apps Script) وتفعيل بوت تيليجرام والتثبيت</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-emerald" onclick="copyTextById('fullGuideText', 'تم نسخ صفحة التعليمات الكاملة!')">📋 نسخ التعليمات</button>
+            <button class="btn btn-amber" onclick="changeGuidePassword()">🔑 تغيير كلمة المرور</button>
+            <button class="btn btn-rose" onclick="lockGuide()">🔒 إغلاق القفل الآن</button>
+          </div>
+        </div>
+        <div id="fullGuideText">
+          <ol class="guide-steps">
+            <li><strong>إنشاء ملف Google Sheet وفتح Apps Script:</strong> افتح Google Sheets وأنشئ جدولاً جديداً، ثم من القائمة العلوية اختر <strong>Extensions (الإضافات) &gt; Apps Script</strong>.</li>
+            <li><strong>نسخ ولصق سكربت جوجل:</strong> انسخ سكربت Google Apps Script الموجود بالأسفل وضعه داخل محرر السكربت بدلاً من الكود الافتراضي، ثم اضغط <strong>Save</strong>.</li>
+            <li><strong>نشر السكربت والحصول على الرابط:</strong> اضغط <strong>Deploy &gt; New deployment</strong>، اختر النوع <strong>Web app</strong>، واجعل <strong>Execute as: Me</strong>، و<strong>Who has access: Anyone</strong>، ثم اضغط <strong>Deploy</strong> وانسخ رابط <code>Web app URL</code> وضعه في خانة <strong>رابط السحابة</strong> في تبويب المزامنة السحابية.</li>
+            <li><strong>إعداد وتفعيل بوت تيليجرام:</strong> أنشئ بوتاً عبر <code>@BotFather</code> في تيليجرام واحصل على <strong>Bot Token</strong>، ثم أرسل رسالة للبوت واحصل على <strong>Chat ID</strong> عبر رابط <code>getUpdates</code> بالأسفل أو عبر <code>@userinfobot</code>.</li>
+            <li><strong>حفظ التفعيل والمزامنة:</strong> أدخل التوكن ومعرف المحادثة في تبويب <strong>المزامنة السحابية والتقويم المؤرخ</strong> واضغط <strong>حفظ إعدادات السحابة وتفعيلها</strong>، ثم جرب <strong>رفع نسخة للسحابة وتيليجرام الآن</strong>.</li>
+            <li><strong>تثبيت النظام كتطبيق على الجوال:</strong> افتح رابط الموقع في <strong>Google Chrome</strong>، اضغط على النقاط الثلاث واختر <strong>إضافة إلى الشاشة الرئيسية</strong> أو <strong>إنشاء اختصار</strong>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="box" style="border-right: 5px solid #10b981;">
+        <div class="box-title">
+          <span>📜 سكربت جوجل (Google Apps Script) — قابل للنسخ بنقرة واحدة</span>
+          <button class="btn btn-emerald" onclick="copyTextById('gasScriptCode', 'تم نسخ سكربت جوجل بنجاح!')">📋 نسخ السكربت</button>
+        </div>
+        <div class="code-box" id="gasScriptCode">function doPost(e) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const data = JSON.parse(e.postData.contents);
+    const ts = data.backupTimestamp || new Date().toLocaleString("ar-EG");
+
+    let devSheet = ss.getSheetByName("Devices");
+    if (!devSheet) devSheet = ss.insertSheet("Devices");
+    devSheet.clearContents();
+
+    const headers = [
+      "ID", "VLAN", "Name", "IP", "Subnet", "MAC",
+      "Location", "Uplink", "Owner", "StartDate", "EndDate",
+      "User", "Password", "Notes", "UpdatedAt"
+    ];
+    devSheet.appendRow(headers);
+
+    const list = Array.isArray(data.devices) ? data.devices : [];
+    list.forEach(d =&gt; {
+      devSheet.appendRow([
+        d.id || "", d.vlan || "", d.name || "", d.ip || "",
+        d.subnet || "", d.mac || "", d.loc || "", d.uplink || "",
+        d.owner || "", d.startDate || "", d.endDate || "",
+        d.user || "", d.pwd || "", d.notes || "", d.updatedAt || ts
+      ]);
+    });
+
+    let logSheet = ss.getSheetByName("Backups");
+    if (!logSheet) {
+      logSheet = ss.insertSheet("Backups");
+      logSheet.appendRow(["Timestamp", "TotalDevices", "JsonPayload"]);
+    }
+    logSheet.appendRow([ts, list.length, JSON.stringify(data)]);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "ok", savedAt: ts, count: list.length }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const logSheet = ss.getSheetByName("Backups");
+    if (!logSheet || logSheet.getLastRow() &lt; 2) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ devices: [] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    const lastJson = logSheet.getRange(logSheet.getLastRow(), 3).getValue();
+    return ContentService
+      .createTextOutput(lastJson)
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</div>
+      </div>
+
+      <div class="box" style="border-right: 5px solid #8b5cf6;">
+        <div class="box-title">
+          <span>🤖 رابط جلب Chat ID لبوت تيليجرام</span>
+          <button class="btn btn-purple" onclick="copyTextById('tgUpdatesUrl', 'تم نسخ رابط جلب Chat ID!')">📋 نسخ الرابط</button>
+        </div>
+        <div class="code-box" id="tgUpdatesUrl" style="max-height:90px;">https://api.telegram.org/bot&lt;YOUR_BOT_TOKEN&gt;/getUpdates</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 let devices = [];
 let saveHistory = [];
+let guideUnlocked = false;
+const DEFAULT_GUIDE_PASS = "736661655";
 
-// Helper to get formatted Date and Time string for filenames and logs
+function getGuidePassword() {
+  return localStorage.getItem('naif_net_v5_guide_pass') || DEFAULT_GUIDE_PASS;
+}
+
+function unlockGuide() {
+  const entered = document.getElementById('guidePassInput').value.trim();
+  const errEl = document.getElementById('guidePassError');
+  if (entered === getGuidePassword()) {
+    guideUnlocked = true;
+    errEl.innerText = '';
+    document.getElementById('guidePassInput').value = '';
+    renderGuideLockState();
+  } else {
+    errEl.innerText = '❌ كلمة المرور غير صحيحة! حاول مرة أخرى.';
+  }
+}
+
+function lockGuide() {
+  guideUnlocked = false;
+  renderGuideLockState();
+}
+
+function changeGuidePassword() {
+  const newPass = prompt('أدخل كلمة المرور الجديدة لقسم التعليمات والسكربتات:');
+  if (newPass && newPass.trim().length >= 3) {
+    localStorage.setItem('naif_net_v5_guide_pass', newPass.trim());
+    alert('تم تحديث كلمة المرور بنجاح!');
+  } else if (newPass !== null) {
+    alert('يرجى إدخال كلمة مرور مكونة من 3 أحرف/أرقام على الأقل.');
+  }
+}
+
+function renderGuideLockState() {
+  const lockScreen = document.getElementById('guideLockScreen');
+  const unlockedBox = document.getElementById('guideUnlockedContent');
+  if (!lockScreen || !unlockedBox) return;
+  if (guideUnlocked) {
+    lockScreen.style.display = 'none';
+    unlockedBox.style.display = 'block';
+  } else {
+    lockScreen.style.display = 'block';
+    unlockedBox.style.display = 'none';
+  }
+}
+
+function copyTextById(elementId, successMessage) {
+  if (!guideUnlocked) {
+    alert('يجب فتح القفل بكلمة المرور أولاً.');
+    return;
+  }
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const textToCopy = el.innerText || el.textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      alert(successMessage);
+    }).catch(() => fallbackCopy(textToCopy, successMessage));
+  } else {
+    fallbackCopy(textToCopy, successMessage);
+  }
+}
+
+function fallbackCopy(text, successMessage) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  alert(successMessage);
+}
+
 function getFormattedTimestamp() {
   const now = new Date();
   const yyyy = now.getFullYear();
@@ -546,11 +763,7 @@ function getFormattedTimestamp() {
 function loadData() {
   const saved = localStorage.getItem('naif_net_v5_devices');
   if (saved) {
-    try {
-      devices = JSON.parse(saved);
-    } catch(e) {
-      devices = [];
-    }
+    try { devices = JSON.parse(saved); } catch(e) { devices = []; }
   } else {
     devices = [];
   }
@@ -570,6 +783,7 @@ function loadData() {
   renderBroadcast();
   renderFamily();
   renderHistory();
+  renderGuideLockState();
 }
 
 function addHistoryEntry(actionTitle) {
@@ -601,10 +815,8 @@ function saveData(actionTitle = 'تحديث وحفظ البيانات') {
   renderBroadcast();
   renderFamily();
 
-  // Trigger Cloud Sync Automatically
   syncToCloudNow(false);
 
-  // Trigger Auto-Download if enabled
   const autoDl = document.getElementById('autoDownloadMode').value;
   if (autoDl === 'ON_SAVE') {
     downloadBackup();
@@ -677,9 +889,11 @@ async function syncToCloudNow(isManual = false) {
 
   if (cfg.cloudUrl && cfg.cloudUrl.startsWith('http')) {
     try {
-      const method = cfg.cloudUrl.includes('firebaseio.com') ? 'PUT' : 'POST';
+      const isFirebase = cfg.cloudUrl.includes('firebaseio.com');
+      const isAppsScript = cfg.cloudUrl.includes('script.google.com');
       await fetch(cfg.cloudUrl, {
-        method: method,
+        method: isFirebase ? 'PUT' : 'POST',
+        mode: isAppsScript ? 'no-cors' : 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -956,6 +1170,9 @@ function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
   if (btn) btn.classList.add('active');
+  if (tabId === 'tabGuide') {
+    renderGuideLockState();
+  }
 }
 
 function exportCSV() {
@@ -1024,7 +1241,7 @@ function printWithTimestamp() {
 }
 
 function resetToDefault() {
-  if (confirm('هل تريد تفريد المسح والبدء بجدول فارغ تماماً؟')) {
+  if (confirm('هل تريد تفريغ المسح والبدء بجدول فارغ تماماً؟')) {
     devices = [];
     localStorage.removeItem('naif_net_v5_devices');
     saveData('تفريغ كافة الأجهزة وبدء جدول جديد');
