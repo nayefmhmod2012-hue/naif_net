@@ -356,12 +356,12 @@
       <div class="form-grid">
         <input type="hidden" id="editId" value="">
         <div class="form-group">
-          <label>رقم الفيلان (VLAN) * [اكتبه ليتعبأ الآيبي تلقائياً]</label>
-          <input type="number" id="fVlan" placeholder="مثال: 29 أو 302" oninput="autoFillFromVlan()">
+          <label>رقم الفيلان (VLAN) * [اكتبه ليتعبأ الاسم والآيبي تلقائياً]</label>
+          <input type="number" id="fVlan" placeholder="مثال: 3، 101، 150، 200، 302" oninput="autoFillFromVlan()">
         </div>
         <div class="form-group">
           <label>اسم الجهاز / الشبكة *</label>
-          <input type="text" id="fName" placeholder="مثال: AP-29 أو 302">
+          <input type="text" id="fName" placeholder="مثال: AP-3 أو vlan1 أو 302">
         </div>
         <div class="form-group">
           <label>عنوان الآيبي (IP Address) *</label>
@@ -960,18 +960,44 @@ async function pullFromCloudNow() {
 function autoFillFromVlan() {
   const v = parseInt(document.getElementById('fVlan').value);
   if (!v || isNaN(v)) return;
+
+  const isEdit = Boolean(document.getElementById('editId').value);
+  let ip = '';
+  let subnet = '';
+  let defaultName = '';
+  let suggestedNote = '';
+
   if (v >= 302) {
     const subOctet = v - 300;
-    document.getElementById('fIp').value = `172.18.1.${subOctet}`;
-    document.getElementById('fSubnet').value = `172.18.${subOctet}.1/24`;
-    if (!document.getElementById('editId').value) {
-      document.getElementById('fName').value = `${v}`;
-    }
+    ip = `172.18.1.${subOctet}`;
+    subnet = `172.18.${subOctet}.1/24`;
+    defaultName = `${v}`;
   } else {
-    document.getElementById('fIp').value = `172.17.1.${v}`;
-    document.getElementById('fSubnet').value = `172.17.${v}.1/24`;
-    if (!document.getElementById('editId').value) {
-      document.getElementById('fName').value = `AP-${v}`;
+    ip = `172.17.1.${v}`;
+    subnet = `172.17.${v}.1/24`;
+
+    if (v >= 101 && v <= 149) {
+      defaultName = `vlan${v - 100}`;
+      suggestedNote = 'أنتينة';
+    } else if (v >= 150 && v <= 199) {
+      defaultName = `AP-${v}`;
+      suggestedNote = 'مودم';
+    } else if (v >= 200 && v <= 254) {
+      defaultName = `vlan${v}`;
+      suggestedNote = 'صحن M5';
+    } else {
+      defaultName = `AP-${v}`;
+    }
+  }
+
+  document.getElementById('fIp').value = ip;
+  document.getElementById('fSubnet').value = subnet;
+
+  if (!isEdit) {
+    document.getElementById('fName').value = defaultName;
+    const notesEl = document.getElementById('fNotes');
+    if (suggestedNote && !notesEl.value.trim()) {
+      notesEl.value = suggestedNote;
     }
   }
 }
